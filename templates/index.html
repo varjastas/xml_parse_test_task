@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Parser</title>
+</head>
+<body>
+    <h1>XML Parser</h1>
+    <form id="parser-form">
+        <label for="scenario">Choose a scenario:</label>
+        <select id="scenario">
+            <option value="1">Count of products</option>
+            <option value="2">All products names and codes</option>
+            <option value="3">All spare parts</option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+    <script>
+        document.getElementById("parser-form").onsubmit = function(e) {
+            e.preventDefault();
+            var scenario = document.getElementById("scenario").value;
+            fetch('/parse', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ scenario: scenario  }) // Modify the payload as needed
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'result.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('Error:', error));
+            };
+    </script>
+</body>
+</html>
