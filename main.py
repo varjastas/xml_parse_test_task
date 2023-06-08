@@ -1,12 +1,13 @@
 import xml.sax
-import os
 
 class Item:
+    #Item class containing name and code of every item.
     def __init__(self, code, name):
         self.code = code
         self.name = name
 
 def write_to_file(part_items):
+    #Writing results of 3 scenario to file
     with open("resources/parts.txt", "w", encoding="UTF-8") as f:
         for i in part_items.keys():
             f.write(f"Item name: {i}\n")
@@ -17,18 +18,19 @@ def write_to_file(part_items):
 class ItemHandler(xml.sax.ContentHandler):
     def __init__(self, scenario, write_results = False):
         self.scenario = scenario
-        self.current_item = None
-        self.root_items = {}
-        self.counter = 0
-        self.in_part = False
-        self.part_items = {}
-        self.current_part_item = None
-        self.write_results = write_results
-        self.in_items = False
+        self.current_item = None # Current root item.
+        self.root_items = {} # List of all items. Key is code, value is Item object
+        self.counter = 0 # Counter is used to know, when root item is closed, because when using sax, you don`t know anything when you receive close tag.
+        self.in_part = False # If True then parse all spare items.
+        self.part_items = {} # List of all spare items
+        self.current_part_item = None # Current item that contains spare items.
+        self.write_results = write_results # If true write to file, else print
+        self.in_items = False # If in tag items, then parse all items
         self.items_counter = 0
 
     def startElement(self, tag, attributes):
         if self.scenario in [1, 2]: 
+            #Parsing items for scenario 1 and 2
             if tag == "items":
                 self.in_items = True
 
@@ -45,7 +47,9 @@ class ItemHandler(xml.sax.ContentHandler):
                 self.counter += 1
 
         if self.scenario == 3:
+            #Parsing items and their spare parts
             if tag == "part" and attributes.get("partName") == "Náhradní díly":
+                
                 item_name = attributes.get("itemName")
                 item_code = attributes.get("id")
                 self.current_part_item = f"{item_name} {item_code}"
@@ -87,6 +91,7 @@ class ItemHandler(xml.sax.ContentHandler):
             self.current_part_item = None
 
     def endDocument(self):
+        # If write results is True - write everything to files based on scenario
         if self.write_results:
             if self.scenario == 1:
                 with open("resources/items_count.txt", "w", encoding="UTF-8") as f:
@@ -100,6 +105,7 @@ class ItemHandler(xml.sax.ContentHandler):
 
 
 def parse_file(file_path, scenario, write_results = False):
+    #Creating parser and setting hadler. Then starting to parse. handler will contain all information collected during parser
     parser = xml.sax.make_parser()
     handler = ItemHandler(scenario, write_results)
     parser.setContentHandler(handler)
@@ -108,18 +114,10 @@ def parse_file(file_path, scenario, write_results = False):
     return handler
 if __name__ == "__main__":
     scenario = int(input("Choose scenario:\n\t1 - count of products.\n\t 2 - all products names and codes.\n\t 3 - all spare parts\n"))
-    
-    write_results_or_print = int(input("If you want to write results type 1, if you want to write them to the file type 2"))
 
-    if not scenario or write_results_or_print:
+    if not scenario:
         raise TypeError("You haven`t passed any argument")  
     if scenario not in [1, 2, 3]:
         raise ValueError("Scenario argument is wrong. Pass number between 1 and 3")
-    if write_results_or_print not in [1, 2]:
-        raise ValueError("Write results argument is wrong. Pass number between 1 and 3")
-
-    if write_results_or_print == 1:
-        write_results_or_print = True
-    else:
-        write_results_or_print = False
+    
     parse_file("resources/export_full.xml", scenario, write_results = False)

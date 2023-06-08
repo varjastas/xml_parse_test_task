@@ -15,6 +15,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 resources_dir = os.path.join(base_dir, 'resources')
 
+#Create files containing parsing results if they`re not present
 def create_result_files():
     if not os.path.exists("items_count.txt"):
         parse_file("resources/export_full.xml", 1, True)
@@ -23,6 +24,7 @@ def create_result_files():
     if not os.path.exists("parts.txt"):
         parse_file("resources/export_full.xml", 3, True)
 
+#Running function on start of server
 with app.app_context():
     create_result_files()
 
@@ -46,6 +48,7 @@ def parse():
     
     file_path = os.path.join(base_dir, file_name)
 
+    #Reading result file content 
     with open(file_path, 'rb') as file:
         file_content = file.read()
 
