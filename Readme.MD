@@ -10,7 +10,7 @@ Parser covered three scenarios:
 
 How to run:
 
-1. You can visit https://xml-parser-test-task.herokuapp.com/ and try all without needing to run anything
+1. You can visit https://xml-parser-test-task.herokuapp.com/ and try it without needing to run anything
 2. You can run main.py and choose scenario. Results will be in directory resources if you`ve chosen to write results to file.
 3. You can start flask server on your PC by simply running flask, but before that you`ll need to install it using pip install flask
 4. You can build container using docker and server on localhost or run main.py in container terminal. How to build:
